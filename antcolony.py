@@ -8,11 +8,7 @@ def update_pheromones(pheromone_list, ant_row, ant_column,evap_coefficient, ant_
 def get_ant_valid_position(ant_row, ant_column, matrix):
     valid_directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
     # Creating a list of valid neighbors
-    valid_neighbors = []
-    for possible_row, possible_column in valid_directions:
-        new_row, new_col = ant_row + possible_row, ant_column + possible_column
-        if 0 <= new_row < len(matrix) and 0 <= new_col < len(matrix[0]):
-            valid_neighbors.append((new_row, new_col))
+    valid_neighbors = [(ant_row + i, ant_column + j) for i, j in valid_directions if 0 <= ant_row + i < len(matrix) and 0 <= ant_column + j < len(matrix[0])]
 
     if valid_neighbors:
         return random.choice(valid_neighbors)
@@ -33,13 +29,14 @@ def move_ant(ant, pheromones, matrix) :
   if ant_row == 0 :
 
     #If the pheromone is bigger for the right neigbhour, move the ant right
-    if ant_column +1 < columns and pheromones[ant_row][ant_column+1] > pheromones[ant_row+1][ant_column]:
+    if ant_column +1 < columns and (pheromones[ant_row][ant_column+1] > pheromones[ant_row+1][ant_column] or matrix[ant_row][ant_column+1] > matrix[ant_row+1][ant_column]):
       new_ant_row = ant_row
       new_ant_column = ant_column +1
 
     #If the pheromone is bigger for the down neigbhour, move the ant down
-    elif ant_row +1 < rows and pheromones[ant_row +1][ant_column] > pheromones[ant_row][ant_column +1]:
-      new_ant_row,new_ant_column = ant_row+1,ant_column
+    elif ant_row +1< rows and ant_column < columns-1 :
+      if pheromones[ant_row +1][ant_column] > pheromones[ant_row][ant_column +1] or matrix[ant_row +1][ant_column] > matrix[ant_row][ant_column +1]:
+        new_ant_row,new_ant_column = ant_row+1,ant_column
 
     #Move ant randomly (down or right) if pheromones are equivalent
     else :
@@ -47,12 +44,13 @@ def move_ant(ant, pheromones, matrix) :
   #If the ant is in the last row, it can only move up or right
   elif ant_row == len(matrix) - 1:
 
-    if ant_column +1 < columns and pheromones[ant_row][ant_column + 1] > pheromones[ant_row - 1][ant_column]:
+    if ant_column +1 < columns and (pheromones[ant_row][ant_column + 1] > pheromones[ant_row - 1][ant_column] or matrix[ant_row][ant_column + 1] > matrix[ant_row - 1][ant_column] ):
       # Move the ant right
       new_ant_row, new_ant_column = ant_row, ant_column + 1
 
-      # Move the ant up
-    elif ant_row > 0 and pheromones[ant_row - 1][ant_column] > pheromones[ant_row][ant_column + 1]:
+    # Move the ant up
+    elif ant_row > 0 and ant_column < columns - 1:
+      if pheromones[ant_row - 1][ant_column] > pheromones[ant_row][ant_column] or matrix[ant_row - 1][ant_column] > matrix[ant_row][ant_column]:
         new_ant_row, new_ant_column = ant_row - 1, ant_column
 
     # Randomly move ant if pheromones are equal
@@ -62,16 +60,16 @@ def move_ant(ant, pheromones, matrix) :
   # If the ant is in the middle of the matrix
   else:
         # Move the ant right
-        if ant_column < len(matrix[0]) - 1 and pheromones[ant_row][ant_column + 1] > pheromones[ant_row][ant_column - 1]:
+        if ant_column < len(matrix[0]) - 1 and (pheromones[ant_row][ant_column + 1] > pheromones[ant_row][ant_column - 1] or matrix[ant_row][ant_column + 1] > matrix[ant_row][ant_column - 1]):
             new_ant_row, new_ant_column = ant_row, ant_column + 1
         # Move the ant left
-        elif ant_column > 0 and pheromones[ant_row][ant_column - 1] > pheromones[ant_row][ant_column + 1]:
+        elif ant_column > 0 and (pheromones[ant_row][ant_column - 1] > pheromones[ant_row][ant_column] or matrix[ant_row][ant_column - 1] > matrix[ant_row][ant_column]):
             new_ant_row, new_ant_column = ant_row, ant_column - 1
         # Move the ant down
-        elif ant_row < len(matrix) - 1 and pheromones[ant_row + 1][ant_column] > pheromones[ant_row - 1][ant_column]:
+        elif ant_row < len(matrix) - 1 and (pheromones[ant_row + 1][ant_column] > pheromones[ant_row - 1][ant_column] or matrix[ant_row + 1][ant_column] > matrix[ant_row - 1][ant_column]):
             new_ant_row, new_ant_column = ant_row + 1, ant_column
         # Move the ant up
-        elif ant_row > 0 and pheromones[ant_row - 1][ant_column] > pheromones[ant_row + 1][ant_column]:
+        elif ant_row > 0 and pheromones[ant_row - 1][ant_column] > (pheromones[ant_row + 1][ant_column] or matrix[ant_row - 1][ant_column] > matrix[ant_row + 1][ant_column]):
             new_ant_row, new_ant_column = ant_row - 1, ant_column
         else:
             #Move the ant randomly
@@ -80,14 +78,14 @@ def move_ant(ant, pheromones, matrix) :
 
 
 #Initializations
-num_ants = 40
+num_ants = 50
 num_coordinates = 2
-num_iterations = 200
+num_iterations = 400
 
 #ACO parameters
-evap = 0.05
-ant_pheromone = 0.2
-initial_phero_value = 0.1
+evap = 0.8
+ant_pheromone = 0.4
+initial_phero_value = 0.3
 
 ants = [] #List of ants
 matrix = [[1, 2, -1, -4, -20],
@@ -99,19 +97,19 @@ matrix = [[1, 2, -1, -4, -20],
 submatrix_frequency = {}
 
 #Creating a matrix of pheromones, a pheromone is associated to each value of the matrix
-pheromone_matrix = np.full_like(matrix,initial_phero_value,dtype="float")
+pheromone_matrix = np.full_like(matrix,np.random.rand(),dtype="float")
 print(pheromone_matrix.shape)
-#Filling the ants positions to the same starting line, ie: pos(0,0)
-for i in range (num_ants) :
-  temp = []
-  for j in range (num_coordinates) :
-    temp.append(0)
-  ants.append(temp)
+#Putting an ant on each element of the matrix
+for i in range(len(matrix)):
+    for j in range(len(matrix[0])):
+        ants.append([i, j])
+
+for ant in ants:
+    ant_row_initial, ant_column_initial = ant
 
 
 for i in range (num_iterations):
   for ant in ants:
-    # Initial ant positions
     ant_row_initial, ant_column_initial = ant
 
     # Updating ant postition
@@ -122,17 +120,25 @@ for i in range (num_iterations):
     # Updating position in the list of ant
     ant[0] = ant_row_updated
     ant[1] = ant_column_updated
-
-    print("Ant row iiiiiis " + str(ant_row_updated))
-    print("Ant column iiiiiis " + str(ant_column_updated))
-
-    current_submatrix = (ant_row_initial, ant_row_updated, ant_column_initial, ant_column_updated)
+    current_submatrix = (min(ant_row_initial, ant_row_updated), max(ant_row_initial, ant_row_updated),
+                             min(ant_column_initial, ant_column_updated), max(ant_column_initial, ant_column_updated))
+    #current_submatrix = (ant_row_initial, ant_row_updated, ant_column_initial, ant_column_updated)
     submatrix_frequency[current_submatrix] = submatrix_frequency.get(current_submatrix, 0) + 1
 
+#most_visited_submatrix = max(submatrix_frequency, key=submatrix_frequency.get)
+# Finding the median of all visited indexes
+median_submatrix = np.median(list(submatrix_frequency.keys()), axis=0)
+median_submatrix = tuple(map(int, median_submatrix))
 
-most_visited_submatrix = max(submatrix_frequency, key=submatrix_frequency.get)
 
-# Récupérer les bornes de la sous-matrice
-i1, i2, j1, j2 = most_visited_submatrix
+# Getting the indexes of the sub-matrix
+i1, i2, j1, j2 = median_submatrix
 print("Les fourmis ont le plus circulé dans la sous-matrice aux indices (i1, i2, j1, j2):", i1, i2, j1, j2)
+# Printing maximum sum sub-matrix
+matrix_np = np.array(matrix)
+submatrix = matrix_np[i1:i2 + 1, j1:j2 + 1]
+print("La sous-matrice la plus visitée par les fourmis est :")
+print(submatrix, end="\n")
+
+print("Fréquences des sous-matrices :", submatrix_frequency)
 

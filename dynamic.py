@@ -6,6 +6,15 @@
 
 # This function return a tuple of the indices and the result of the sum (i, j, sum)
 
+
+A = [[1, 2, -1, -4, -20], [-8, -3, 4, 2, 1],
+
+     [3, 8, 10, 1, 3], [-4, -1, 1, 7, -6]]
+
+B = [[5, 6, 1, 4, 20], [8, -3, 9, 7, 6],
+     [7, 8, 10, 5, 5], [4, 1, 5, 7, 6]]
+
+
 def maxSubArraySum(A):
     max_current = A[0]
     max = A[0]
@@ -50,11 +59,19 @@ def maxSumMatrix(M):
     return max_up, max_down, max_left, max_right, max_sum
 
 
-A = [[1, 2, -1, -4, -20], [-8, -3, 4, 2, 1],
+solution = maxSumMatrix(A)
 
-     [3, 8, 10, 1, 3], [-4, -1, 1, 7, -6]]
+print("Max sum for A : {}, coord {} ".format(
+    solution[4], (solution[0], solution[1], solution[2], solution[3])))
+print(A[0])
+print(A[1])
+print(A[2])
+print(A[3])
+solution2 = maxSumMatrix(B)
 
-i1, i2, j1, j2, resofsum = maxSumMatrix(A)
-
-print('i1 : {}, i2 : {}, j1 : {}, j2 : {}, sum : {}'.format(
-    i1, i2, j1, j2, resofsum))
+print("Max sum for B : {}, coord {} ".format(
+    solution2[4], (solution2[0], solution2[1], solution2[2], solution2[3])))
+print(B[0])
+print(B[1])
+print(B[2])
+print(B[3])

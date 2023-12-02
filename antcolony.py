@@ -76,69 +76,63 @@ def move_ant(ant, pheromones, matrix) :
             new_ant_row, new_ant_column = get_ant_valid_position(ant_row, ant_column, matrix)
   return new_ant_row, new_ant_column
 
-
 #Initializations
-num_ants = 50
+num_ants = 30
 num_coordinates = 2
 num_iterations = 400
-
 #ACO parameters
 evap = 0.8
 ant_pheromone = 0.4
 initial_phero_value = 0.3
 
-ants = [] #List of ants
+def ACO(num_ants,num_coordinates,num_iterations,evap,ant_pheromone,matrix):
+  #List of ants
+  ants = [] 
+  #Matrix in which there will be the indexes
+  submatrix_frequency = {}
+  #Creating a matrix of random pheromones, a pheromone is associated to each value of the matrix
+  pheromone_matrix = np.full_like(matrix,np.random.rand(),dtype="float")
+  print(pheromone_matrix.shape)
+  #Putting an ant on each element of the matrix
+  for i in range(num_ants):
+    ant_row = i // matrix_columns
+    ant_column = i % matrix_columns
+    ants.append([ant_row % matrix_rows, ant_column])
+  
+  for ant in ants:
+    ant_row_initial, ant_column_initial = ant
+
+  for i in range (num_iterations):
+    for ant in ants:
+      ant_row_initial, ant_column_initial = ant
+
+      # Updating ant postition
+      ant_row_updated, ant_column_updated = move_ant(ant, pheromone_matrix, matrix)
+      # Using new ant position to update pheromones
+      update_pheromones(pheromone_matrix, ant_row_updated, ant_column_updated, evap, ant_pheromone)
+
+      # Updating position in the list of ant
+      ant[0] = ant_row_updated
+      ant[1] = ant_column_updated
+      current_submatrix = (min(ant_row_initial, ant_row_updated), max(ant_row_initial, ant_row_updated),
+                             min(ant_column_initial, ant_column_updated), max(ant_column_initial, ant_column_updated))
+      #current_submatrix = (ant_row_initial, ant_row_updated, ant_column_initial, ant_column_updated)
+      submatrix_frequency[current_submatrix] = submatrix_frequency.get(current_submatrix, 0) + 1
+  median_submatrix = np.median(list(submatrix_frequency.keys()), axis=0)
+  median_submatrix = tuple(map(int, median_submatrix))
+  # Getting the indexes of the sub-matrix
+  i1, i2, j1, j2 = median_submatrix
+  print("Les fourmis ont le plus circulé dans la sous-matrice aux indices (i1, i2, j1, j2):", i1, i2, j1, j2)
+  # Printing maximum sum sub-matrix
+  matrix_np = np.array(matrix)
+  submatrix = matrix_np[i1:i2 + 1, j1:j2 + 1]
+  print("La sous-matrice la plus visitée par les fourmis est :")
+  print(submatrix, end="\n")
+
 matrix = [[1, 2, -1, -4, -20],
           [-8, -3, 4, 2, 1],
           [3, 8, 10, 1, 3],
           [-4, -1, 1, 7, -6]]
 
-#Matrix in which there will be the indexes
-submatrix_frequency = {}
-
-#Creating a matrix of pheromones, a pheromone is associated to each value of the matrix
-pheromone_matrix = np.full_like(matrix,np.random.rand(),dtype="float")
-print(pheromone_matrix.shape)
-#Putting an ant on each element of the matrix
-for i in range(len(matrix)):
-    for j in range(len(matrix[0])):
-        ants.append([i, j])
-
-for ant in ants:
-    ant_row_initial, ant_column_initial = ant
-
-
-for i in range (num_iterations):
-  for ant in ants:
-    ant_row_initial, ant_column_initial = ant
-
-    # Updating ant postition
-    ant_row_updated, ant_column_updated = move_ant(ant, pheromone_matrix, matrix)
-    # Using new ant position to update pheromones
-    update_pheromones(pheromone_matrix, ant_row_updated, ant_column_updated, evap, ant_pheromone)
-
-    # Updating position in the list of ant
-    ant[0] = ant_row_updated
-    ant[1] = ant_column_updated
-    current_submatrix = (min(ant_row_initial, ant_row_updated), max(ant_row_initial, ant_row_updated),
-                             min(ant_column_initial, ant_column_updated), max(ant_column_initial, ant_column_updated))
-    #current_submatrix = (ant_row_initial, ant_row_updated, ant_column_initial, ant_column_updated)
-    submatrix_frequency[current_submatrix] = submatrix_frequency.get(current_submatrix, 0) + 1
-
-#most_visited_submatrix = max(submatrix_frequency, key=submatrix_frequency.get)
-# Finding the median of all visited indexes
-median_submatrix = np.median(list(submatrix_frequency.keys()), axis=0)
-median_submatrix = tuple(map(int, median_submatrix))
-
-
-# Getting the indexes of the sub-matrix
-i1, i2, j1, j2 = median_submatrix
-print("Les fourmis ont le plus circulé dans la sous-matrice aux indices (i1, i2, j1, j2):", i1, i2, j1, j2)
-# Printing maximum sum sub-matrix
-matrix_np = np.array(matrix)
-submatrix = matrix_np[i1:i2 + 1, j1:j2 + 1]
-print("La sous-matrice la plus visitée par les fourmis est :")
-print(submatrix, end="\n")
-
-print("Fréquences des sous-matrices :", submatrix_frequency)
+ACO(30,2,400,0.8,0.4,matrix)
 

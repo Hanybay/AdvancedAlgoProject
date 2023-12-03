@@ -8,7 +8,7 @@ def somme_max_segment_matrice_aleatoire(alea, matrice):
     somme_max = float('-inf')
     coins_max = None
     
-    for nbr_alea in range(alea):  # Nombre d'itérations aléatoires (modifiable)
+    for nbr_alea in range(alea):
         debut_ligne = random.randint(0, lignes - 1)
         fin_ligne = random.randint(debut_ligne, lignes - 1)
         debut_colonne = random.randint(0, colonnes - 1)

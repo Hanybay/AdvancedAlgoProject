@@ -1,5 +1,6 @@
-import numpy as np
-import random
+#This file contains the implementaion of the Ant colony approach for the maximum sum sub-matrix problem.
+
+# Author : BAYAZID Hany
 
 def update_pheromones(pheromone_list, ant_row, ant_column,evap_coefficient, ant_pheromone):
   pheromone_list[ant_row][ant_column] = (1 - evap_coefficient) * pheromone_list[ant_row][ant_column] + ant_pheromone
@@ -78,27 +79,27 @@ def move_ant(ant, pheromones, matrix) :
 
 #Initializations
 num_ants = 30
-num_coordinates = 2
 num_iterations = 400
 #ACO parameters
 evap = 0.8
 ant_pheromone = 0.4
 initial_phero_value = 0.3
 
-def ACO(num_ants,num_coordinates,num_iterations,evap,ant_pheromone,matrix):
+def ACO(num_ants,num_iterations,evap,ant_pheromone,matrix):
   #List of ants
-  ants = [] 
+  ants = []
   #Matrix in which there will be the indexes
   submatrix_frequency = {}
   #Creating a matrix of random pheromones, a pheromone is associated to each value of the matrix
   pheromone_matrix = np.full_like(matrix,np.random.rand(),dtype="float")
-  print(pheromone_matrix.shape)
+  #print(pheromone_matrix.shape)
+  matrix_rows, matrix_columns = len(matrix), len(matrix[0])
   #Putting an ant on each element of the matrix
   for i in range(num_ants):
     ant_row = i // matrix_columns
     ant_column = i % matrix_columns
     ants.append([ant_row % matrix_rows, ant_column])
-  
+
   for ant in ants:
     ant_row_initial, ant_column_initial = ant
 
@@ -122,17 +123,11 @@ def ACO(num_ants,num_coordinates,num_iterations,evap,ant_pheromone,matrix):
   median_submatrix = tuple(map(int, median_submatrix))
   # Getting the indexes of the sub-matrix
   i1, i2, j1, j2 = median_submatrix
-  print("Les fourmis ont le plus circulé dans la sous-matrice aux indices (i1, i2, j1, j2):", i1, i2, j1, j2)
+  #print("Les fourmis ont le plus circulé dans la sous-matrice aux indices (i1, i2, j1, j2):", i1, i2, j1, j2)
   # Printing maximum sum sub-matrix
   matrix_np = np.array(matrix)
   submatrix = matrix_np[i1:i2 + 1, j1:j2 + 1]
-  print("La sous-matrice la plus visitée par les fourmis est :")
+  print('i1 : {}, i2 : {}, j1 : {}, j2 : {}, sum : {}'.format(
+    i1, i2, j1, j2, np.sum(submatrix)))
+  print("Most visited submatrix is :")
   print(submatrix, end="\n")
-
-matrix = [[1, 2, -1, -4, -20],
-          [-8, -3, 4, 2, 1],
-          [3, 8, 10, 1, 3],
-          [-4, -1, 1, 7, -6]]
-
-ACO(30,2,400,0.8,0.4,matrix)
-

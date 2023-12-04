@@ -92,7 +92,6 @@ def ACO(num_ants,num_iterations,evap,ant_pheromone,matrix):
   submatrix_frequency = {}
   #Creating a matrix of random pheromones, a pheromone is associated to each value of the matrix
   pheromone_matrix = np.full_like(matrix,np.random.rand(),dtype="float")
-  #print(pheromone_matrix.shape)
   matrix_rows, matrix_columns = len(matrix), len(matrix[0])
   #Putting an ant on each element of the matrix
   for i in range(num_ants):
@@ -123,11 +122,7 @@ def ACO(num_ants,num_iterations,evap,ant_pheromone,matrix):
   median_submatrix = tuple(map(int, median_submatrix))
   # Getting the indexes of the sub-matrix
   i1, i2, j1, j2 = median_submatrix
-  #print("Les fourmis ont le plus circulé dans la sous-matrice aux indices (i1, i2, j1, j2):", i1, i2, j1, j2)
-  # Printing maximum sum sub-matrix
   matrix_np = np.array(matrix)
   submatrix = matrix_np[i1:i2 + 1, j1:j2 + 1]
-  print('i1 : {}, i2 : {}, j1 : {}, j2 : {}, sum : {}'.format(
-    i1, i2, j1, j2, np.sum(submatrix)))
-  print("Most visited submatrix is :")
-  print(submatrix, end="\n")
+  max_sum = np.sum(submatrix)
+  return i1, i2, j1, j2, max_sum
